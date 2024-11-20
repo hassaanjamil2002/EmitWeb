@@ -1,30 +1,21 @@
-
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dotenv = require("dotenv");
-
-dotenv.config();
+const express = require('express');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const exampleRoutes = require("./routes/exampleRoutes");
-app.use("/api/examples", exampleRoutes);
+
+// Connect to database
+connectDB();
 
 // Middleware
+app.use(bodyParser.json());
 app.use(cors());
-app.use(express.json());
-
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
 
 // Routes
-app.get("/", (req, res) => {
-    res.send("Backend is running!");
-});
+app.use('/api/auth', authRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
